@@ -25,9 +25,13 @@ PLATFORMS = {
 
 
 def closure(version):
-    """[(name, version)] for skaldr==version's full runtime closure, via uv."""
+    """[(name, version)] for skaldr==version's full runtime closure, via uv.
+
+    --refresh bypasses uv's index cache: right after a release, PyPI has just gained this
+    version, and a cached "not found" would otherwise make resolution fail.
+    """
     out = subprocess.run(
-        ["uv", "pip", "compile", "-", "--python-version", "3.13", "--quiet"],
+        ["uv", "pip", "compile", "-", "--python-version", "3.13", "--refresh", "--quiet"],
         input=f"skaldr=={version}\n", capture_output=True, text=True, check=True,
     ).stdout
     pins = []
