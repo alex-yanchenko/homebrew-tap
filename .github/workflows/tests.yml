@@ -1,0 +1,17 @@
+name: Style
+
+# `brew style` (rubocop) only — it doesn't fetch the release assets, so it passes even
+# while a formula's sha256 is still the pre-release placeholder. `brew audit` / `brew
+# test` are intentionally not run here; they require reachable assets and belong once
+# every formula points at a real release.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  style:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew style Formula/*.rb
