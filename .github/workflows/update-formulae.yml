@@ -1,9 +1,9 @@
 name: Update formulae
 
-# Manual fallback / backfill only. The automatic path is a direct push from each tool's
-# release workflow (bumps the formula the instant the release publishes). This stays for
-# re-syncing a formula on demand — it reads each tool's latest release and rewrites the
-# formula's url + sha256 from the release asset's API digest, so nothing is downloaded.
+# Re-pins a formula to its tool's latest published release on demand: reads the release
+# asset's sha256 from the GitHub API (nothing is downloaded) and rewrites the formula's url
+# + sha256. Each tool also pushes its formula from its own release workflow; run this to
+# re-sync by hand.
 on:
   workflow_dispatch:
 
