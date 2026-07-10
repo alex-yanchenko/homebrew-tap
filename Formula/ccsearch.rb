@@ -23,7 +23,7 @@ class Ccsearch < Formula
     # venv has pip to unpack the wheel with. cached_download is the prebuilt wheel; copy it
     # to a valid wheel filename and install it (--no-deps: there are none; --no-index:
     # never touch the network in the Homebrew build sandbox).
-    system Formula["python@3.13"].opt_bin/"python3.13", "-m", "venv", libexec
+    system formula_opt_bin("python@3.13")/"python3.13", "-m", "venv", libexec
     whl = buildpath/"ccsearch-#{version}-py3-none-any.whl"
     cp cached_download, whl
     system libexec/"bin/pip", "install", "--no-deps", "--no-index", "--no-cache-dir", whl
