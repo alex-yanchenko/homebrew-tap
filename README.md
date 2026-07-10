@@ -26,16 +26,14 @@ updates itself instead — run `kvasir upgrade`.
 
 ## How updates flow
 
-1. Each tool uses **release-please**: conventional commits accumulate into a release PR;
-   merging it cuts a published release automatically (no manual step).
-2. That release's job then **pushes the formula bump straight to this tap** (via the
-   release app's token) — the instant the release publishes, not on a schedule.
-   - **ccsearch** is zero-dependency, so its bump is a one-line `url` + `sha256` rewrite.
+1. Each tool uses **release-please**: merging its release PR publishes a release.
+2. The release job then **pushes the formula update to this tap** using the release app's
+   token.
+   - **ccsearch** is zero-dependency, so it rewrites the formula's `url` + `sha256`.
    - **skaldr** has compiled, per-platform dependencies (`pydantic-core`, `pyyaml`,
-     `markupsafe`), so its release regenerates `Formula/skaldr.rb` via
-     `scripts/gen-skaldr-formula.py`, which re-pins skaldr's wheel + every dependency wheel
-     (one per platform) from PyPI.
-3. `brew upgrade` on any machine then picks up the new version.
+     `markupsafe`), so it regenerates `Formula/skaldr.rb` via `scripts/gen-skaldr-formula.py`,
+     which re-pins skaldr's wheel + every dependency wheel (one per platform) from PyPI.
+3. `brew upgrade` picks up the new version.
 
 ## Layout
 
