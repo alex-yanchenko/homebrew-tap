@@ -24,8 +24,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          # bump_from_github_release <formula> <owner/repo> <sdist-package-name>
+          # bump_from_github_release <formula> <owner/repo> <package-name>
           # Rewrites the formula's url + sha256 to the repo's latest published release.
+          # Targets the prebuilt py3-none-any wheel — the formula installs that directly
+          # rather than source-building the sdist (Homebrew's --no-binary can't build the
+          # uv_build backend). A package with compiled/platform-specific wheels would need
+          # a different asset pattern.
           bump_from_github_release() {
             formula="$1"; repo="$2"; pkg="$3"
             tag=$(gh api "repos/$repo/releases/latest" --jq '.tag_name' 2>/dev/null || true)
@@ -34,7 +38,7 @@ jobs:
               return
             fi
             version="${tag#v}"
-            asset="${pkg}-${version}.tar.gz"
+            asset="${pkg}-${version}-py3-none-any.whl"
             digest=$(gh api "repos/$repo/releases/tags/$tag" \
               --jq ".assets[] | select(.name==\"$asset\") | .digest" 2>/dev/null || true)
             sha="${digest#sha256:}"
