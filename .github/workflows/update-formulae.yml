@@ -50,7 +50,7 @@ jobs:
             echo "$formula → $tag ($sha)"
           }
 
-          bump_from_github_release ccfind alex-yanchenko/ccfind ccfind
+          bump_from_github_release ccsearch alex-yanchenko/ccsearch ccsearch
           # skaldr is added here once it is published to PyPI — see README (it sources
           # from PyPI, not a GitHub release, so it needs a separate PyPI-based bump).
 
