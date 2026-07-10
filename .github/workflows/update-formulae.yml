@@ -1,18 +1,11 @@
 name: Update formulae
 
-# Keeps each formula pointed at its tool's latest published release. Runs on a schedule
-# (and on demand) rather than being pushed from each tool's repo, so no cross-repo token
-# is needed — this workflow only writes to the tap itself with the default GITHUB_TOKEN.
-# The release asset's sha256 comes from the GitHub API's `digest` field, so nothing is
-# downloaded.
+# Manual fallback / backfill only. The automatic path is a direct push from each tool's
+# release workflow (bumps the formula the instant the release publishes). This stays for
+# re-syncing a formula on demand — it reads each tool's latest release and rewrites the
+# formula's url + sha256 from the release asset's API digest, so nothing is downloaded.
 on:
-  schedule:
-    - cron: "0 6 * * *"
   workflow_dispatch:
-  # A released tool nudges this (via repos/…/dispatches) so brew updates immediately
-  # instead of waiting for the daily cron.
-  repository_dispatch:
-    types: [tool-released]
 
 permissions:
   contents: write
