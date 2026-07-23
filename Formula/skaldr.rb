@@ -1,8 +1,8 @@
 class Skaldr < Formula
   desc "Render a YAML content file into a self-contained HTML report page"
   homepage "https://github.com/alex-yanchenko/skaldr"
-  url "https://files.pythonhosted.org/packages/ab/12/87f2dd77737f24a4a0a633de4c300ab9582ff10a471c376b5b393a9e664f/skaldr-1.4.0-py3-none-any.whl"
-  sha256 "39e4777bfacd131b028072017784a380527fabb8c5a4a94e125f160baed81128"
+  url "https://files.pythonhosted.org/packages/92/89/a25cb1391e53b7450f9059ec8aa528c53774ac51953ca156cf7e048eaaa1/skaldr-2.0.0-py3-none-any.whl"
+  sha256 "9a0f0ba0917d0134214206f989495501e60e7da5916642a8f40fee085db9c4f7"
   license "MIT"
 
   depends_on "libyaml"
