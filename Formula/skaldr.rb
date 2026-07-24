@@ -1,16 +1,16 @@
 class Skaldr < Formula
   desc "Render a YAML content file into a self-contained HTML report page"
   homepage "https://github.com/alex-yanchenko/skaldr"
-  url "https://files.pythonhosted.org/packages/81/a2/43a0a02b75461fb01b254a0b53899dd0bfaa12d2f5e310386540f91f9bdd/skaldr-2.1.0-py3-none-any.whl"
-  sha256 "89dd1dfd4ac182aff856adb96e29c7c71a154856da23c3d95d17e77e63ccfcff"
+  url "https://files.pythonhosted.org/packages/22/cd/54f4f1a055857b2064d4d4e4cac46d05de6237230e08451046c06a433b54/skaldr-2.2.0-py3-none-any.whl"
+  sha256 "1763d14e1226b94481b1e70d4614d9020912ec0b8b282e668d3c741a16fd9b41"
   license "MIT"
 
   depends_on "libyaml"
   depends_on "python@3.13"
 
   resource "annotated_types" do
-    url "https://files.pythonhosted.org/packages/78/b6/6307fbef88d9b5ee7421e68d78a9f162e0da4900bc5f5793f6d3d0e34fb8/annotated_types-0.7.0-py3-none-any.whl"
-    sha256 "1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53"
+    url "https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl"
+    sha256 "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0"
   end
   resource "jinja2" do
     url "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl"
