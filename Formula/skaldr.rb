@@ -1,8 +1,8 @@
 class Skaldr < Formula
   desc "Render a YAML content file into a self-contained HTML report page"
   homepage "https://github.com/alex-yanchenko/skaldr"
-  url "https://files.pythonhosted.org/packages/e6/89/b8e4d20fe4bf41e78d4dfcb2918ce725fcb80dfc35236b851635cf70d502/skaldr-2.8.0-py3-none-any.whl"
-  sha256 "c016ba50524cbf6e30980b60300b25ac5b863a649f58175c1e7081caa4703dee"
+  url "https://files.pythonhosted.org/packages/80/f2/dd9bdf4e30437eefeb5363f02574d4e6cac2b78f740800869bd47a97b726/skaldr-2.9.0-py3-none-any.whl"
+  sha256 "6df72dc27534ae05c2119016651f8947e30708eed46c9ad392a933c205d3650e"
   license "MIT"
 
   depends_on "libyaml"
@@ -91,8 +91,8 @@ class Skaldr < Formula
     sha256 "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
   end
   resource "typing_inspection" do
-    url "https://files.pythonhosted.org/packages/42/f7/7a3935abdebd5cf18705a5f0335dd6a3a18bef3baa7cb9edc3b6b9922cc8/typing_inspection-0.4.3-py3-none-any.whl"
-    sha256 "5f42b23858a91e0b4ef521f5418f03a0da3c9216fd2995ef5e73463100e676cd"
+    url "https://files.pythonhosted.org/packages/67/81/4add07e5172b7ac40d8ed5ff580409a7801a4fe26d529bdd915401dabfbe/typing_inspection-0.4.4-py3-none-any.whl"
+    sha256 "65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147"
   end
 
   def install
