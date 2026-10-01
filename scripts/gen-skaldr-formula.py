@@ -1,9 +1,11 @@
 """Generate Formula/skaldr.rb for the Homebrew tap.
 
-Resolves skaldr's runtime closure, then for each package picks the wheel(s) to pin:
-pure packages get their single py3-none-any wheel; compiled packages get a cp313 wheel
-for each of the four Homebrew target platforms (macOS arm64/x64, Linux arm64/x64).
-Emits a formula that installs everything offline from the pre-fetched wheels.
+Resolves the runtime closure of skaldr with its publish extra, then for each package picks
+the wheel(s) to pin: pure packages get their single py3-none-any wheel; compiled packages
+get a cp313 wheel for each Homebrew target platform (macOS arm64, Linux arm64/x64).
+cryptography, which the publish extra needs, ships no macOS x86_64 wheel, so the formula
+declares arm64 on macOS. Emits a formula that installs everything offline from the
+pre-fetched wheels.
 
 Usage: python gen_skaldr_formula.py 0.3.0 > skaldr.rb
 """
@@ -18,21 +20,20 @@ VERSION = sys.argv[1]
 # (ruby label for on_ block) -> substrings a matching cp313 wheel filename must contain
 PLATFORMS = {
     ("macos", "arm"): ["macosx", "arm64"],
-    ("macos", "intel"): ["macosx", "x86_64"],
     ("linux", "arm"): ["manylinux", "aarch64"],
     ("linux", "intel"): ["manylinux", "x86_64"],
 }
 
 
 def closure(version):
-    """[(name, version)] for skaldr==version's full runtime closure, via uv.
+    """[(name, version)] for skaldr[publish]==version's full runtime closure, via uv.
 
     --refresh bypasses uv's index cache: right after a release, PyPI has just gained this
     version, and a cached "not found" would otherwise make resolution fail.
     """
     out = subprocess.run(
         ["uv", "pip", "compile", "-", "--python-version", "3.13", "--refresh", "--quiet"],
-        input=f"skaldr=={version}\n", capture_output=True, text=True, check=True,
+        input=f"skaldr[publish]=={version}\n", capture_output=True, text=True, check=True,
     ).stdout
     pins = []
     for line in out.splitlines():
@@ -76,12 +77,12 @@ def res(name, files):
             f"  end\n"
         )
     lines = [f'  resource "{label}" do']
-    macos = {k[1]: compiled_wheel(files, v) for k, v in PLATFORMS.items() if k[0] == "macos"}
-    linux = {k[1]: compiled_wheel(files, v) for k, v in PLATFORMS.items() if k[0] == "linux"}
-    for osname, sel in (("macos", macos), ("linux", linux)):
+    for osname in ("macos", "linux"):
         lines.append(f"    on_{osname} do")
-        for arch in ("arm", "intel"):
-            w = sel[arch]
+        for (platform_os, arch), needles in PLATFORMS.items():
+            if platform_os != osname:
+                continue
+            w = compiled_wheel(files, needles)
             if not w:
                 raise SystemExit(f"no cp313 {osname}/{arch} wheel for {name} {version}")
             lines.append(f"      on_{arch} do")
@@ -117,6 +118,10 @@ print(f'''class Skaldr < Formula
 
 {"".join(system_deps)}  depends_on "python@3.13"
 
+  on_macos do
+    depends_on arch: :arm64
+  end
+
 {"".join(resources)}
   def install
     system formula_opt_bin("python@3.13")/"python3.13", "-m", "venv", libexec
@@ -126,7 +131,7 @@ print(f'''class Skaldr < Formula
     # wheel. Collect skaldr + every pinned dependency wheel, then install offline.
     cp cached_download, wheelhouse/"skaldr-#{{version}}-py3-none-any.whl"
     resources.each {{ |r| r.stage {{ cp Dir["*.whl"].first, wheelhouse }} }}
-    system libexec/"bin/pip", "install", "--no-index", "--find-links", wheelhouse, "skaldr==#{{version}}"
+    system libexec/"bin/pip", "install", "--no-index", "--find-links", wheelhouse, "skaldr[publish]==#{{version}}"
     bin.install_symlink libexec/"bin/skaldr"
   end
 
