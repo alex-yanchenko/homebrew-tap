@@ -1,8 +1,8 @@
 class Skaldr < Formula
   desc "Render a YAML content file into a self-contained HTML report page"
   homepage "https://github.com/alex-yanchenko/skaldr"
-  url "https://files.pythonhosted.org/packages/dd/f4/02c4ab9ff12d489eedf654e1ddbd4d43e4500017b3ab001f3c93e8970580/skaldr-3.2.1-py3-none-any.whl"
-  sha256 "ed2a708b18399dea4e7368bd7905cf0041bd67cfc1609b6cee20db3e79ef48aa"
+  url "https://files.pythonhosted.org/packages/ed/a4/0a30708dd0fb58bc745b1ba00645e7f638093af17eaab3c9dba57de6447c/skaldr-3.3.0-py3-none-any.whl"
+  sha256 "304ab5b6492920baeaa888cc5adc99992596f030ebc80214272bacf2f1438249"
   license "MIT"
 
   depends_on "libyaml"
@@ -168,6 +168,10 @@ class Skaldr < Formula
       end
     end
   end
+  resource "pygments" do
+    url "https://files.pythonhosted.org/packages/71/46/17f022dd3e953bf20a04a028a21ec746d942f8d2af30fa0f124fa0e6a684/pygments-2.21.0-py3-none-any.whl"
+    sha256 "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9"
+  end
   resource "pyyaml" do
     on_macos do
       on_arm do
@@ -229,5 +233,6 @@ class Skaldr < Formula
 
   test do
     system bin/"skaldr", "--help"
+    system libexec/"bin/python", "-c", "import authlib, httpx2, keyring, cryptography"
   end
 end
