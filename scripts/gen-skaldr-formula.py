@@ -3,11 +3,13 @@
 Resolves the runtime closure of skaldr with its publish extra for every Homebrew target
 platform (macOS arm64/x64, Linux arm64/x64) and takes the union, then for each package
 picks the wheel(s) to pin: pure packages get their single py3-none-any wheel; compiled
-packages get a cp313 wheel per platform. When some compiled package has no macOS x86_64
+packages get, per platform, the best-ranked wheel whose tags CPython 3.13 accepts on that
+platform's oldest supported baseline (macOS 11, glibc 2.17), whatever order PyPI lists files
+in; generation fails when no wheel qualifies. When some compiled package has no macOS x86_64
 wheel (cryptography 50 has none), the formula drops that platform and declares arm64 on
 macOS. Emits a formula that installs everything offline from the pre-fetched wheels.
 
-Usage: python gen_skaldr_formula.py 0.3.0 > skaldr.rb
+Usage: uv run --no-project --with packaging python gen-skaldr-formula.py 0.3.0 > skaldr.rb
 """
 
 import json
@@ -15,14 +17,34 @@ import subprocess
 import sys
 import urllib.request
 
-VERSION = sys.argv[1]
+from packaging.tags import compatible_tags, cpython_tags, mac_platforms
+from packaging.utils import parse_wheel_filename
 
-# (ruby label for on_ block) -> substrings a matching cp313 wheel filename must contain
+PYTHON_VERSION = (3, 13)
+INTERPRETER = "cp313"
+OLDEST_MACOS = (11, 0)
+OLDEST_GLIBC_MINOR = 17
+OLDEST_GLIBC_MINOR_TO_ACCEPT = 5
+
+
+def macos_platform_tags(arch):
+    return list(mac_platforms(OLDEST_MACOS, arch))
+
+
+def linux_platform_tags(arch):
+    modern = [
+        f"manylinux_2_{minor}_{arch}"
+        for minor in range(OLDEST_GLIBC_MINOR, OLDEST_GLIBC_MINOR_TO_ACCEPT - 1, -1)
+    ]
+    legacy = [f"manylinux2014_{arch}", f"manylinux2010_{arch}", f"manylinux1_{arch}"]
+    return modern + legacy
+
+
 PLATFORMS = {
-    ("macos", "arm"): ["macosx", "arm64"],
-    ("macos", "intel"): ["macosx", "x86_64"],
-    ("linux", "arm"): ["manylinux", "aarch64"],
-    ("linux", "intel"): ["manylinux", "x86_64"],
+    ("macos", "arm"): macos_platform_tags("arm64"),
+    ("macos", "intel"): macos_platform_tags("x86_64"),
+    ("linux", "arm"): linux_platform_tags("aarch64"),
+    ("linux", "intel"): linux_platform_tags("x86_64"),
 }
 
 UV_PLATFORMS = {
@@ -66,20 +88,37 @@ def files_for(name, version):
     return [f for f in data["urls"] if f["packagetype"] == "bdist_wheel"]
 
 
+def wheel_tags(file):
+    return parse_wheel_filename(file["filename"])[3]
+
+
 def pure_wheel(files):
-    for f in files:
-        if f["filename"].endswith("-none-any.whl"):
-            return f
-    return None
+    pure = [f for f in files if any(tag.platform == "any" for tag in wheel_tags(f))]
+    return min(pure, key=lambda f: f["filename"], default=None)
 
 
-def compiled_wheel(files, needles):
-    # cp313 (or stable-ABI abi3) wheel whose filename carries every platform needle
+def supported_tags_by_preference(platform_tags):
+    ordered = list(cpython_tags(PYTHON_VERSION, platforms=platform_tags))
+    ordered += compatible_tags(PYTHON_VERSION, interpreter=INTERPRETER, platforms=platform_tags)
+    return {tag: rank for rank, tag in reversed(list(enumerate(ordered)))}
+
+
+def pick_wheel(files, platform_key):
+    rank_of = supported_tags_by_preference(PLATFORMS[platform_key])
+    ranked = []
     for f in files:
-        fn = f["filename"]
-        if ("cp313" in fn or "abi3" in fn) and all(n in fn for n in needles):
-            return f
-    return None
+        ranks = [rank_of[tag] for tag in wheel_tags(f) if tag in rank_of]
+        if ranks:
+            ranked.append((min(ranks), f["filename"], f))
+    return min(ranked, key=lambda entry: entry[:2])[2] if ranked else None
+
+
+def require_wheel(name, version, files, platform_key):
+    wheel = pick_wheel(files, platform_key)
+    if not wheel:
+        osname, arch = platform_key
+        raise SystemExit(f"no {INTERPRETER} wheel installable on {osname}/{arch} for {name} {version}")
+    return wheel
 
 
 def res(name, version, files, platforms):
@@ -95,12 +134,11 @@ def res(name, version, files, platforms):
     lines = [f'  resource "{label}" do']
     for osname in ("macos", "linux"):
         lines.append(f"    on_{osname} do")
-        for (platform_os, arch), needles in platforms.items():
+        for platform_key in platforms:
+            platform_os, arch = platform_key
             if platform_os != osname:
                 continue
-            w = compiled_wheel(files, needles)
-            if not w:
-                raise SystemExit(f"no cp313 {osname}/{arch} wheel for {name} {version}")
+            w = require_wheel(name, version, files, platform_key)
             lines.append(f"      on_{arch} do")
             lines.append(f'        url "{w["url"]}"')
             lines.append(f'        sha256 "{w["digests"]["sha256"]}"')
@@ -110,24 +148,23 @@ def res(name, version, files, platforms):
     return "\n".join(lines) + "\n"
 
 
-pins = closure(VERSION)
-skaldr_files = files_for("skaldr", VERSION)
-skaldr_whl = pure_wheel(skaldr_files)
+def main(version):
+    pins = closure(version)
+    skaldr_files = files_for("skaldr", version)
+    skaldr_whl = pure_wheel(skaldr_files)
 
-dependency_files = {name: files_for(name, ver) for name, ver in sorted(pins.items()) if name != "skaldr"}
-serves_intel_macs = all(
-    pure_wheel(files) or compiled_wheel(files, PLATFORMS[MACOS_INTEL]) for files in dependency_files.values()
-)
-platforms = {key: needles for key, needles in PLATFORMS.items() if serves_intel_macs or key != MACOS_INTEL}
-resources = [res(name, pins[name], files, platforms) for name, files in dependency_files.items()]
-arm64_on_macos = "" if serves_intel_macs else "  on_macos do\n    depends_on arch: :arm64\n  end\n\n"
+    dependency_files = {name: files_for(name, ver) for name, ver in sorted(pins.items()) if name != "skaldr"}
+    serves_intel_macs = all(
+        pure_wheel(files) or pick_wheel(files, MACOS_INTEL) for files in dependency_files.values()
+    )
+    platforms = [key for key in PLATFORMS if serves_intel_macs or key != MACOS_INTEL]
+    resources = [res(name, pins[name], files, platforms) for name, files in dependency_files.items()]
+    arm64_on_macos = "" if serves_intel_macs else "  on_macos do\n    depends_on arch: :arm64\n  end\n\n"
 
-# Homebrew's audit requires a depends_on for a resource's known system library. pyyaml maps
-# to libyaml; brew forbids suppressing the cop, so declare it. (The wheel bundles its own
-# libyaml, so it's unused at runtime, but Homebrew expects the dependency declared.)
-system_deps = ['  depends_on "libyaml"\n'] if "pyyaml" in pins else []
+    # external:homebrew audit wants depends_on for pyyaml's libyaml; the cop cannot be suppressed
+    system_deps = ['  depends_on "libyaml"\n'] if "pyyaml" in pins else []
 
-print(f'''class Skaldr < Formula
+    print(f'''class Skaldr < Formula
   desc "Render a YAML content file into a self-contained HTML report page"
   homepage "https://github.com/alex-yanchenko/skaldr"
   url "{skaldr_whl["url"]}"
@@ -151,5 +188,10 @@ print(f'''class Skaldr < Formula
 
   test do
     system bin/"skaldr", "--help"
+    system libexec/"bin/python", "-c", "import authlib, httpx2, keyring, cryptography"
   end
 end''')
+
+
+if __name__ == "__main__":
+    main(sys.argv[1])
