@@ -9,7 +9,11 @@ in; generation fails when no wheel qualifies. When some compiled package has no 
 wheel (cryptography 50 has none), the formula drops that platform and declares arm64 on
 macOS. Emits a formula that installs everything offline from the pre-fetched wheels.
 
-Usage: uv run --no-project --with packaging python gen-skaldr-formula.py 0.3.0 > skaldr.rb
+The resolver targets the same glibc floor as the selector (uv's manylinux_2_17 platforms). uv
+has no option for a macOS version, so macOS is resolved at uv's default and the selector
+enforces the macOS floor, failing when a resolved version has no wheel for it.
+
+Usage: uv run --no-project --with packaging==26.3 python gen-skaldr-formula.py 0.3.0 > skaldr.rb
 """
 
 import json
@@ -20,11 +24,12 @@ import urllib.request
 from packaging.tags import compatible_tags, cpython_tags, mac_platforms
 from packaging.utils import parse_wheel_filename
 
-PYTHON_VERSION = (3, 13)
-INTERPRETER = "cp313"
+PYTHON_DOTTED = "3.13"
+PYTHON_VERSION = tuple(int(part) for part in PYTHON_DOTTED.split("."))
+INTERPRETER = "cp" + PYTHON_DOTTED.replace(".", "")
 OLDEST_MACOS = (11, 0)
 OLDEST_GLIBC_MINOR = 17
-OLDEST_GLIBC_MINOR_TO_ACCEPT = 5
+LOWEST_GLIBC_MINOR_TRIED = 5
 
 
 def macos_platform_tags(arch):
@@ -34,7 +39,7 @@ def macos_platform_tags(arch):
 def linux_platform_tags(arch):
     modern = [
         f"manylinux_2_{minor}_{arch}"
-        for minor in range(OLDEST_GLIBC_MINOR, OLDEST_GLIBC_MINOR_TO_ACCEPT - 1, -1)
+        for minor in range(OLDEST_GLIBC_MINOR, LOWEST_GLIBC_MINOR_TRIED - 1, -1)
     ]
     legacy = [f"manylinux2014_{arch}", f"manylinux2010_{arch}", f"manylinux1_{arch}"]
     return modern + legacy
@@ -50,8 +55,8 @@ PLATFORMS = {
 UV_PLATFORMS = {
     ("macos", "arm"): "aarch64-apple-darwin",
     ("macos", "intel"): "x86_64-apple-darwin",
-    ("linux", "arm"): "aarch64-unknown-linux-gnu",
-    ("linux", "intel"): "x86_64-unknown-linux-gnu",
+    ("linux", "arm"): f"aarch64-manylinux_2_{OLDEST_GLIBC_MINOR}",
+    ("linux", "intel"): f"x86_64-manylinux_2_{OLDEST_GLIBC_MINOR}",
 }
 
 MACOS_INTEL = ("macos", "intel")
@@ -68,7 +73,7 @@ def closure(version):
     pins = {}
     for uv_platform in UV_PLATFORMS.values():
         out = subprocess.run(
-            ["uv", "pip", "compile", "-", "--python-version", "3.13", "--python-platform", uv_platform,
+            ["uv", "pip", "compile", "-", "--python-version", PYTHON_DOTTED, "--python-platform", uv_platform,
              "--refresh", "--quiet"],
             input=f"skaldr[publish]=={version}\n", capture_output=True, text=True, check=True,
         ).stdout
@@ -92,25 +97,27 @@ def wheel_tags(file):
     return parse_wheel_filename(file["filename"])[3]
 
 
-def pure_wheel(files):
-    pure = [f for f in files if any(tag.platform == "any" for tag in wheel_tags(f))]
-    return min(pure, key=lambda f: f["filename"], default=None)
-
-
 def supported_tags_by_preference(platform_tags):
     ordered = list(cpython_tags(PYTHON_VERSION, platforms=platform_tags))
     ordered += compatible_tags(PYTHON_VERSION, interpreter=INTERPRETER, platforms=platform_tags)
     return {tag: rank for rank, tag in reversed(list(enumerate(ordered)))}
 
 
-def pick_wheel(files, platform_key):
-    rank_of = supported_tags_by_preference(PLATFORMS[platform_key])
+def best_ranked(files, rank_of):
     ranked = []
     for f in files:
         ranks = [rank_of[tag] for tag in wheel_tags(f) if tag in rank_of]
         if ranks:
             ranked.append((min(ranks), f["filename"], f))
     return min(ranked, key=lambda entry: entry[:2])[2] if ranked else None
+
+
+def pure_wheel(files):
+    return best_ranked(files, supported_tags_by_preference(["any"]))
+
+
+def pick_wheel(files, platform_key):
+    return best_ranked(files, supported_tags_by_preference(PLATFORMS[platform_key]))
 
 
 def require_wheel(name, version, files, platform_key):
@@ -154,6 +161,9 @@ def main(version):
     skaldr_whl = pure_wheel(skaldr_files)
 
     dependency_files = {name: files_for(name, ver) for name, ver in sorted(pins.items()) if name != "skaldr"}
+    for name, files in dependency_files.items():
+        if not files:
+            raise SystemExit(f"{name} {pins[name]} has no wheels on PyPI; the formula installs wheels only")
     serves_intel_macs = all(
         pure_wheel(files) or pick_wheel(files, MACOS_INTEL) for files in dependency_files.values()
     )
@@ -171,11 +181,11 @@ def main(version):
   sha256 "{skaldr_whl["digests"]["sha256"]}"
   license "MIT"
 
-{"".join(system_deps)}  depends_on "python@3.13"
+{"".join(system_deps)}  depends_on "python@{PYTHON_DOTTED}"
 
 {arm64_on_macos}{"".join(resources)}
   def install
-    system formula_opt_bin("python@3.13")/"python3.13", "-m", "venv", libexec
+    system formula_opt_bin("python@{PYTHON_DOTTED}")/"python{PYTHON_DOTTED}", "-m", "venv", libexec
     wheelhouse = buildpath/"wheelhouse"
     wheelhouse.mkpath
     # .whl is not an archive Homebrew unpacks, so cached_download / the staged file IS the

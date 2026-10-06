@@ -20,4 +20,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v7
-      - run: uv run --with packaging --with pytest pytest -q
+      - run: uv run --with packaging==26.3 --with pytest pytest -q
