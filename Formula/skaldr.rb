@@ -1,8 +1,8 @@
 class Skaldr < Formula
   desc "Render a YAML content file into a self-contained HTML report page"
   homepage "https://github.com/alex-yanchenko/skaldr"
-  url "https://files.pythonhosted.org/packages/4d/08/266ca3c82aa4885ae60906299308bd8f31783fbbc44b182bc1c1356d0f73/skaldr-4.2.0-py3-none-any.whl"
-  sha256 "7ea20944773f701c366ed5dafc46df739c8dc9d950aa238cdac14c7469e3b181"
+  url "https://files.pythonhosted.org/packages/35/8d/fc02dd209cdfc897c05adba64665b6a6de2b6c41dce1ce0f50c8706cface/skaldr-4.3.0-py3-none-any.whl"
+  sha256 "c038111c436071537a8c81c7bc2c914ccaec76ff7a03a1b73fb792db9569ad96"
   license "MIT"
 
   depends_on "libyaml"
@@ -17,12 +17,12 @@ class Skaldr < Formula
     sha256 "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0"
   end
   resource "anyio" do
-    url "https://files.pythonhosted.org/packages/12/b8/4bd346e22b28902df4d651910f5242c28d84e4a5c2435ca5c3f797ed7e2e/anyio-4.15.1-py3-none-any.whl"
-    sha256 "6152fdbbf9a77fdec97731721bebf7c4c44f7c29b424b0065826173efc7ed101"
+    url "https://files.pythonhosted.org/packages/a9/16/7757fb84c819accc7d7e9af5291b261e4abb8627ee040f99e7d35ef2457a/anyio-4.16.0-py3-none-any.whl"
+    sha256 "c66ae634e0b8228396b801741beb3294326d4b6102f7bba4041c0dfb58c29026"
   end
   resource "authlib" do
-    url "https://files.pythonhosted.org/packages/39/44/a46089266de32a0d809023b6bf31b80a1f26a46954446a7ce695a565cbea/authlib-1.9.1-py2.py3-none-any.whl"
-    sha256 "8b9be8b1e5174dcbf5520e984f1a22dc2edae5b6e40a61d4cedbf86b97e9e69b"
+    url "https://files.pythonhosted.org/packages/58/d7/d384e7a639dd1d018767ba0fe39601b61cded066bb7af38db31ec998252d/authlib-1.9.5-py2.py3-none-any.whl"
+    sha256 "e32a63e3d869196b61816b2602231862179a2ffc29358c009d1f022c8b86a8b2"
   end
   resource "cffi" do
     on_macos do
@@ -65,8 +65,8 @@ class Skaldr < Formula
     sha256 "c4230d80640def9071599ff56b1b5950fe13a2a94c0da98c5deab12431b24330"
   end
   resource "filelock" do
-    url "https://files.pythonhosted.org/packages/e0/1b/5e74289a1878e666bb4b65fe5805a04cafcac2aa5f519ef1ead67ef91c56/filelock-4.2.4-py3-none-any.whl"
-    sha256 "301241438c57936ef93f4243a94f2559022268bfcf9b375a9a72eb0f8db8358e"
+    url "https://files.pythonhosted.org/packages/00/05/76184fe08339723d643ab47887a8e4de8f2921ca4e008617ab7490af7857/filelock-4.2.9-py3-none-any.whl"
+    sha256 "a379c50a729e5b68c8519a4d26489f755d9769960a236ecd838190e2a78db2e9"
   end
   resource "h11" do
     url "https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl"
@@ -105,8 +105,8 @@ class Skaldr < Formula
     sha256 "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67"
   end
   resource "joserfc" do
-    url "https://files.pythonhosted.org/packages/df/9f/934db284aa22f37af59708e382903860d4b81329c137b1b0ed2745daeb65/joserfc-1.7.7-py3-none-any.whl"
-    sha256 "06979cfbab78bc802f14c0358f32969826cc26720e13cb38926ffdc86bc0cb2c"
+    url "https://files.pythonhosted.org/packages/5e/7e/7ffaae13415e8f51c8e8d5d1845f2de7a27ebf2717e97a38d7e7446d6030/joserfc-1.8.0-py3-none-any.whl"
+    sha256 "176b836ac7ed9a46a88629e24076314b475f33a75d0bad7f26146e572eed7c79"
   end
   resource "keyring" do
     url "https://files.pythonhosted.org/packages/81/db/e655086b7f3a705df045bf0933bdd9c2f79bb3c97bfef1384598bb79a217/keyring-25.7.0-py3-none-any.whl"
@@ -151,24 +151,24 @@ class Skaldr < Formula
     sha256 "a076f3f489b39b43ed13563a1dafe42447445bec2e294154ec5c57fcdda4c85e"
   end
   resource "pydantic" do
-    url "https://files.pythonhosted.org/packages/35/ea/a56b9fe5066f3537b7882f77e9c5dfb26d8c2eefdaed9b5fc73d57b4dc22/pydantic-2.14.1-py3-none-any.whl"
-    sha256 "9195d967ec791692a04438115466764fb8b9a27b31f14a760437694f40d6b454"
+    url "https://files.pythonhosted.org/packages/72/b8/b864503789ef5c58597d2a7b4adbee62c26440ab1e682581fc6838df8947/pydantic-2.14.3-py3-none-any.whl"
+    sha256 "3f7b347782ab7e4cf4c798496ae3a82787d9f21ec12676a9c564355eeef8daa8"
   end
   resource "pydantic_core" do
     on_macos do
       on_arm do
-        url "https://files.pythonhosted.org/packages/f7/b9/c720e56858d4e1539503297ed37063e0c08e0f3541c41b777f6a800f75fa/pydantic_core-2.50.1-cp313-cp313-macosx_11_0_arm64.whl"
-        sha256 "0c003c3b7f49debb893d2d85ae099ac5959c9839e2f330fadb1fcdf7a6594482"
+        url "https://files.pythonhosted.org/packages/90/a9/fc89a632331882c4cb91b949003418e6f5085ddcf2c9b875d499682bca91/pydantic_core-2.50.4-cp313-cp313-macosx_11_0_arm64.whl"
+        sha256 "1239daaf063e62213ca1f34d96663900bd7510c42a786e843fd328af70e46445"
       end
     end
     on_linux do
       on_arm do
-        url "https://files.pythonhosted.org/packages/4d/b8/fbfc25875219cc060e613170ff10e850c6d8924beb4910da57c2ee3ba1d2/pydantic_core-2.50.1-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl"
-        sha256 "409e0ea40ec30d9158f33574fd758e689f6045a0f2596701828c27816ca9687d"
+        url "https://files.pythonhosted.org/packages/b3/b8/936cb0d85a4082e902c7397db0f05c4372eac08372c8bd2d0b43088fcf17/pydantic_core-2.50.4-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl"
+        sha256 "a9ee990bf2cfbd81574c5d4f9f6c9d480a14b5b43d2c4f2ca13f4c6f48089394"
       end
       on_intel do
-        url "https://files.pythonhosted.org/packages/1c/bc/d79d000e5203ebef39af839f2ce77a777fcad6e08ad26af9a2fcd114ffc8/pydantic_core-2.50.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
-        sha256 "17e722e156d0444ecaefbe640bdb60928752bf2013e2b7a11cdb099aaae19bec"
+        url "https://files.pythonhosted.org/packages/2b/c0/1c8f2c8f1b03d3fe2fdd7962df8f5a744fe48c90b4c49615e4eb77d04141/pydantic_core-2.50.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+        sha256 "fb2bb5b557080da398b866408117d98fe9731a12334afd0cdff221b458cdc5dc"
       end
     end
   end
@@ -219,8 +219,8 @@ class Skaldr < Formula
     sha256 "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
   end
   resource "typing_inspection" do
-    url "https://files.pythonhosted.org/packages/67/81/4add07e5172b7ac40d8ed5ff580409a7801a4fe26d529bdd915401dabfbe/typing_inspection-0.4.4-py3-none-any.whl"
-    sha256 "65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147"
+    url "https://files.pythonhosted.org/packages/de/0c/ea2544850a7c135e15033a5c7a8e7211136184b7ae63e2239d557c2b3019/typing_inspection-0.4.5-py3-none-any.whl"
+    sha256 "bc210535442b39e1bf2805e0c7a17dfd6a4ace760c84c7f7d16245d23a6b1c39"
   end
   resource "webencodings" do
     url "https://files.pythonhosted.org/packages/77/c6/040cbc72480d789a5f40d63fb484d3106554c4dfa2d2b70ad5022057750f/webencodings-0.6.1-py3-none-any.whl"
