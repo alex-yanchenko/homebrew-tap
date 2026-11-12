@@ -1,8 +1,8 @@
 class Skaldr < Formula
   desc "Render a YAML content file into a self-contained HTML report page"
   homepage "https://github.com/alex-yanchenko/skaldr"
-  url "https://files.pythonhosted.org/packages/35/8d/fc02dd209cdfc897c05adba64665b6a6de2b6c41dce1ce0f50c8706cface/skaldr-4.3.0-py3-none-any.whl"
-  sha256 "c038111c436071537a8c81c7bc2c914ccaec76ff7a03a1b73fb792db9569ad96"
+  url "https://files.pythonhosted.org/packages/37/a7/22e53f92a4aab7f18409fadad304fcce184818ef94abe5e37819f917e2b9/skaldr-4.3.1-py3-none-any.whl"
+  sha256 "7d0f65298fd8937ccce9d99c006e4faf01f1d5ab7627b9bb4d2b50ddc4fc8681"
   license "MIT"
 
   depends_on "libyaml"
@@ -65,8 +65,8 @@ class Skaldr < Formula
     sha256 "c4230d80640def9071599ff56b1b5950fe13a2a94c0da98c5deab12431b24330"
   end
   resource "filelock" do
-    url "https://files.pythonhosted.org/packages/00/05/76184fe08339723d643ab47887a8e4de8f2921ca4e008617ab7490af7857/filelock-4.2.9-py3-none-any.whl"
-    sha256 "a379c50a729e5b68c8519a4d26489f755d9769960a236ecd838190e2a78db2e9"
+    url "https://files.pythonhosted.org/packages/ef/90/5d0096a325aa0f83ba7a3968bfb485b67e32c947bdf9cd0fcb4b485be718/filelock-4.2.10-py3-none-any.whl"
+    sha256 "9479aaeb4db20b5a53e3da28493edd24720b66b8a0b84030aa56ccdf243d6857"
   end
   resource "h11" do
     url "https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl"
@@ -117,8 +117,8 @@ class Skaldr < Formula
     sha256 "c337668441b71c819b6733905a8058ba9a9d767bae11a0c5fdacb3aff31361bd"
   end
   resource "markdown_it_py" do
-    url "https://files.pythonhosted.org/packages/b3/81/4da04ced5a082363ecfa159c010d200ecbd959ae410c10c0264a38cac0f5/markdown_it_py-4.2.0-py3-none-any.whl"
-    sha256 "9f7ebbcd14fe59494226453aed97c1070d83f8d24b6fc3a3bcf9a38092641c4a"
+    url "https://files.pythonhosted.org/packages/c9/31/5f0ac2f1a1c67423c995c731a11cd4ad05d081a2be969d74f868bdb9cc70/markdown_it_py-4.3.0-py3-none-any.whl"
+    sha256 "7aa1511a46c39138de78d9eba92ce47e63124d8003fc98b3a351909e04239efa"
   end
   resource "markupsafe" do
     on_macos do
