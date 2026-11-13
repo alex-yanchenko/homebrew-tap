@@ -10,8 +10,8 @@ class Ccsearch < Formula
 
   desc "Search your Claude Code sessions by content"
   homepage "https://github.com/alex-yanchenko/ccsearch"
-  url "https://github.com/alex-yanchenko/ccsearch/releases/download/v0.2.5/ccsearch-0.2.5-py3-none-any.whl"
-  sha256 "0b00faee9f0e851c99c140a12038bfdcdc549334da8a69777539eb6d8c2736b1"
+  url "https://github.com/alex-yanchenko/ccsearch/releases/download/v0.2.6/ccsearch-0.2.6-py3-none-any.whl"
+  sha256 "3e65f0fc4a777effb667341db4af07c3b785bf7151078d20180f33fa4f143529"
   license "PolyForm-Noncommercial-1.0.0"
 
   depends_on "fzf"
